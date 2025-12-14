@@ -8,7 +8,7 @@ import java.util.Random;
 public class Main {
 
     public static void main(String[] args) {
-        System.out.println("Non-thread");
+        System.out.println("Non-threads");
         nonThread();
 
         System.out.println("\nSimple threads");
