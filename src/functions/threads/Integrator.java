@@ -14,8 +14,10 @@ public class Integrator extends Thread {
 
     @Override
     public void run() {
-        try {
-            for (int i = 0; i < task.getTasksCount(); i++) {
+        for (int i = 0; i < task.getTasksCount(); i++) {
+            if (Thread.currentThread().isInterrupted()) return;
+
+            try {
                 semaphore.acquireRead();
 
                 Function f = task.getFunction();
@@ -27,8 +29,11 @@ public class Integrator extends Thread {
 
                 System.out.println("Result " + left + " " + right + " " + step + " " + result);
 
+            } catch (InterruptedException e) {
+                return;
+            } finally {
                 semaphore.releaseRead();
             }
-        } catch (InterruptedException ignored) { }
+        }
     }
 }

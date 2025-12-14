@@ -1,5 +1,6 @@
 package functions;
 
+import functions.basic.Exp;
 import functions.basic.Log;
 import functions.threads.*;
 
@@ -8,28 +9,30 @@ import java.util.Random;
 public class Main {
 
     public static void main(String[] args) {
-        System.out.println("Non-threads");
+        System.out.println("Проверка интегрирования экспоненты на [0,1]");
+        Function f = new Exp();
+        double left = 0;
+        double right = 1;
+        double exact = Math.exp(1) - 1;
+        double step = 0.1;
+        double integral;
+
+        do {
+            integral = Functions.integrate(f, left, right, step);
+            step /= 2;
+        } while (Math.abs(integral - exact) > 1e-7);
+
+        System.out.printf("Интеграл e^x на [0,1] = %.10f%n", integral);
+        System.out.printf("шаг дискретизации = %.10f%n", step * 2);
+
+        System.out.println("\nNon-threads");
         nonThread();
 
         System.out.println("\nSimple threads");
         simpleThreads();
-    }
 
-    // Метод для вычисления интеграла по методу трапеций
-    public static double integrate(Function f, double left, double right, double step) {
-        if (left < f.getLeftDomainBorder() || right > f.getRightDomainBorder()) {
-            throw new IllegalArgumentException("Интеграл за границами функции");
-        }
-        double result = 0;
-        double x = left;
-        while (x < right) {
-            double nextX = Math.min(x + step, right);
-            double y1 = f.getFunctionValue(x);
-            double y2 = f.getFunctionValue(nextX);
-            result += (y1 + y2) * (nextX - x) / 2;
-            x = nextX;
-        }
-        return result;
+        System.out.println("\nComplicated threads");
+        complicatedThreads();
     }
 
     public static void nonThread() {
@@ -49,7 +52,7 @@ public class Main {
 
             System.out.printf("Source %.5f %.5f %.5f%n", left, right, step);
 
-            double integral = integrate(task.getFunction(), left, right, step);
+            double integral = Functions.integrate(task.getFunction(), left, right, step);
 
             System.out.printf("Result %.5f %.5f %.5f %.10f%n", left, right, step, integral);
         }
@@ -72,6 +75,7 @@ public class Main {
             e.printStackTrace();
         }
     }
+
     public static void complicatedThreads() {
         Task task = new Task();
         task.setTasksCount(100);
@@ -85,15 +89,10 @@ public class Main {
         integrator.start();
 
         try {
-            Thread.sleep(50);
-            generator.interrupt();
-            integrator.interrupt();
-
             generator.join();
             integrator.join();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
-
 }

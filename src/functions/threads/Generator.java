@@ -13,14 +13,16 @@ public class Generator extends Thread {
 
     @Override
     public void run() {
-        try {
-            for (int i = 0; i < task.getTasksCount(); i++) {
+        for (int i = 0; i < task.getTasksCount(); i++) {
+            if (Thread.currentThread().isInterrupted()) return;
+
+            try {
+                semaphore.acquireWrite();
+
                 double base = 1 + Math.random() * 9;
                 double left = Math.random() * 100;
                 double right = 100 + Math.random() * 100;
                 double step = Math.random();
-
-                semaphore.acquireWrite();
 
                 task.setFunction(new Log(base));
                 task.setLeftBorder(left);
@@ -29,10 +31,17 @@ public class Generator extends Thread {
 
                 System.out.println("Source " + left + " " + right + " " + step);
 
+            } catch (InterruptedException e) {
+                return;
+            } finally {
                 semaphore.releaseWrite();
-
-                Thread.sleep(1);
             }
-        } catch (InterruptedException ignored) { }
+
+            try {
+                Thread.sleep(1);
+            } catch (InterruptedException e) {
+                return;
+            }
+        }
     }
 }
