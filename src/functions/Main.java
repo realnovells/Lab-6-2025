@@ -89,6 +89,10 @@ public class Main {
         integrator.start();
 
         try {
+            Thread.sleep(50);
+            generator.interrupt();
+            integrator.interrupt();
+
             generator.join();
             integrator.join();
         } catch (InterruptedException e) {

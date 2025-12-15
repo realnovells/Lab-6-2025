@@ -23,21 +23,17 @@ public class Generator extends Thread {
                 double left = Math.random() * 100;
                 double right = 100 + Math.random() * 100;
                 double step = Math.random();
+                if (step == 0) step = 0.01;
 
                 task.setFunction(new Log(base));
                 task.setLeftBorder(left);
                 task.setRightBorder(right);
                 task.setStep(step);
 
-                System.out.println("Source " + left + " " + right + " " + step);
+                System.out.printf("Source %.4f %.4f %.4f%n", left, right, step);
 
-            } catch (InterruptedException e) {
-                return;
-            } finally {
                 semaphore.releaseWrite();
-            }
 
-            try {
                 Thread.sleep(1);
             } catch (InterruptedException e) {
                 return;

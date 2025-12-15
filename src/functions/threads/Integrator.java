@@ -27,12 +27,15 @@ public class Integrator extends Thread {
 
                 double result = Functions.integrate(f, left, right, step);
 
-                System.out.println("Result " + left + " " + right + " " + step + " " + result);
+                System.out.printf("Result %.4f %.4f %.4f %.8f%n", left, right, step, result);
 
+                semaphore.releaseRead();
+
+                Thread.sleep(1); 
             } catch (InterruptedException e) {
                 return;
-            } finally {
-                semaphore.releaseRead();
+            } catch (IllegalArgumentException e) {
+                System.out.println("Ошибка интегрирования: " + e.getMessage());
             }
         }
     }

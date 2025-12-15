@@ -1,11 +1,12 @@
 package functions.threads;
 
 public class Semaphore {
-    private boolean available = true;
+    private boolean available = false;
 
     public synchronized void acquireWrite() throws InterruptedException {
-        while (!available) wait();
-        available = false;
+        while (available) {
+            wait();
+        }
     }
 
     public synchronized void releaseWrite() {
@@ -14,11 +15,13 @@ public class Semaphore {
     }
 
     public synchronized void acquireRead() throws InterruptedException {
-        while (available) wait();
+        while (!available) {
+            wait();
+        }
     }
 
     public synchronized void releaseRead() {
-        available = true;
+        available = false;
         notifyAll();
     }
 }

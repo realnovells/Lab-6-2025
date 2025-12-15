@@ -11,6 +11,7 @@ public class Task {
     private int tasksCount;
     private boolean ready = false;
 
+
     public synchronized boolean isReady() { return ready; }
     public synchronized void setReady(boolean ready) { this.ready = ready; }
 
